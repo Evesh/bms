@@ -1,0 +1,78 @@
+@import './base.css';
+
+
+:root {
+  /* Светлая тема (твоя база с легким уточнением) */
+  --app-bg: #f1f5f9;
+  --header-bg: rgba(255, 255, 255, 0.8);
+  /* Полупрозрачный для эффекта стекла */
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: rgba(226, 232, 240, 0.8);
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --accent-color: #3b82f6;
+  /* Яркий синий */
+
+  --background: radial-gradient(circle at 20% 20%, #e0f2fe, transparent 40%),
+    radial-gradient(circle at 80% 0%, #fce7f3, transparent 35%),
+    #f1f5f9;
+
+  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+
+
+  --battery-bar-color: #adb5bd;
+  --battery-border-color: #adb5bd;
+  --battery-empty-bar-color: #eef1f4;
+  --battery-filled-high-color: #2ecc71;
+  --battery-filled-medium-color: #f39c12;
+  --battery-filled-low-color: #e74c3c;
+  --battery-index-background-color: #f8f8f8;
+}
+
+html.dark {
+  /* Темная тема: Глубокий океанический синий/серый */
+  --app-bg: #0f172a;
+  --header-bg: rgba(15, 23, 42, 0.8);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(30, 41, 59, 0.7);
+  --card-bg: rgba(30, 41, 59, 0.5);
+  --card-bg-active: rgba(48, 67, 97, 0.7);
+  --switch-card-bg: rgba(15, 23, 42, 0.5);
+
+  --accent-color: #60a5fa;
+
+  /* Эффект свечения в темной теме */
+  --background: radial-gradient(circle at 20% 20%, #1e293b, transparent 50%),
+    radial-gradient(circle at 80% 0%, #1e1b4b, transparent 40%),
+    #020617;
+
+  --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(151, 151, 151, 0.06);
+
+
+  --battery-bar-color: #1e1e1e;
+  --battery-empty-bar-color: #2a2a2a;
+  --battery-border-color: #444;
+  --battery-index-background-color: #113f67;
+  --battery-filled-high-color: #118a7e;
+  --battery-filled-medium-color: #f39c12;
+  --battery-filled-low-color: #e74c3c;
+  --battery-index-background-color: #113f67;
+}
+
+/* Применяем градиент ко всей странице */
+body {
+  background: var(--background);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--text-main);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+}
