@@ -1,0 +1,63 @@
+# Деплой BMS Monitor на GitHub Pages
+# Запускается при каждом пуше в ветку main (или вручную через Actions).
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # разрешает запуск вручную из вкладки Actions
+
+# Права для записи на GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Только один деплой одновременно; новый пуш отменяет текущий деплой (не сборку)
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+
+  # ── 1. Сборка ──────────────────────────────────────────────────────────────
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm           # кешируем node_modules между запусками
+
+      - name: Install dependencies
+        run: npm ci            # чистая установка по package-lock.json
+
+      - name: Build
+        run: npm run build
+        env:
+          # Автоматически подставляет /имя-репозитория/ как base path.
+          # Например для repo "alice/bms-monitor" → base = "/bms-monitor/"
+          # Для user-pages репо (alice/alice.github.io) поменяй на: VITE_BASE_PATH: /
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist           # папка после `npm run build`
+
+  # ── 2. Деплой ──────────────────────────────────────────────────────────────
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}   # ссылка в Summary
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,183 +1,48 @@
-# BMS Monitor
+# xiaoxiang-2
 
-Веб-приложение для мониторинга и управления платами **Xiaoxiang BMS** (JBD BMS) через [Web Bluetooth API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API).
+This template should help get you started developing with Vue 3 in Vite.
 
----
+## Recommended IDE Setup
 
-## Возможности
+[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-- **Подключение по BLE** — без драйверов, кабелей и установки программ
-- **Дашборд в реальном времени** (обновление каждые 3 секунды):
-  - Уровень заряда (%) с анимированным индикатором
-  - Напряжение, ток, мощность, остаточная ёмкость
-  - Температура по каждому NTC-датчику
-  - Оценка времени до окончания зарядки
-- **Управление MOSFET** — включение/отключение порта заряда и разряда с подтверждением
-- **Статус защит** — декодирование 16-битного регистра защит в читаемые предупреждения
-- **Ячейки батареи** — напряжение на каждой ячейке, подсветка минимальной/максимальной, индикатор балансировки
-- **EEPROM-регистры** — чтение параметров BMS (пороги напряжений, токов, температур) с описанием и единицами измерения
-- **Тёмная / светлая тема** — переключение в один клик, запоминается между сессиями
+## Recommended Browser Setup
 
----
+- Chromium-based browsers (Chrome, Edge, Brave, etc.):
+  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
+  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
+- Firefox:
+  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
+  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
 
-## Совместимость
+## Type Support for `.vue` Imports in TS
 
-### BMS-платы
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
-Протокол Xiaoxiang BMS (JBD BMS). Проверено на платах с BLE-модулем на сервисе `0xFF00`.
+## Customize configuration
 
-### Браузеры
+See [Vite Configuration Reference](https://vite.dev/config/).
 
-Web Bluetooth API доступен только в браузерах на движке **Chromium**:
+## Project Setup
 
-| Браузер | Поддержка |
-|---------|-----------|
-| Chrome 70+ | ✅ |
-| Edge 79+ | ✅ |
-| Opera | ✅ |
-| Chrome for Android | ✅ |
-| Firefox | ❌ не поддерживается |
-| Safari / iOS | ❌ не поддерживается |
-
-> На **iOS** Web Bluetooth недоступен ни в одном браузере (ограничение платформы).
-
----
-
-## Быстрый старт
-
-### Требования
-
-- Node.js `^20.19.0` или `>=22.12.0`
-- npm
-
-### Установка и запуск
-
-```bash
-# Установить зависимости
+```sh
 npm install
+```
 
-# Запустить dev-сервер
+### Compile and Hot-Reload for Development
+
+```sh
 npm run dev
 ```
 
-Приложение откроется на `http://localhost:5173`.
+### Type-Check, Compile and Minify for Production
 
-### Сборка для production
-
-```bash
+```sh
 npm run build
 ```
 
-Готовые файлы появятся в папке `dist/`. Можно разместить на любом статическом хостинге (Nginx, GitHub Pages, Netlify и т.д.).
+### Lint with [ESLint](https://eslint.org/)
 
-> **Важно:** Web Bluetooth работает только на `localhost` или по **HTTPS**. На `http://` с реальным доменом API заблокировано браузером.
-
-### Предпросмотр сборки
-
-```bash
-npm run preview
+```sh
+npm run lint
 ```
-
----
-
-## Подключение к BMS
-
-1. Включите питание BMS-платы и убедитесь, что BLE-модуль активен
-2. Включите Bluetooth на компьютере или Android-устройстве
-3. Откройте приложение в Chrome/Edge
-4. Нажмите **«Подключить»** — браузер покажет системный диалог выбора устройства
-5. Выберите вашу BMS из списка (обычно имя начинается с `JBD-` или `SP...`)
-6. После подключения приложение автоматически перейдёт на дашборд
-
----
-
-## Структура проекта
-
-```
-src/
-├── composable/
-│   └── useBmsBle.ts      # Ядро: BLE-соединение, парсинг пакетов, EEPROM
-├── components/
-│   ├── Battery.vue        # Визуализация отдельной ячейки
-│   ├── BTButton.vue       # Кнопка подключения Bluetooth
-│   ├── Card.vue           # Карточка параметра с delta-индикатором
-│   ├── Progressbar.vue    # Полукруглый индикатор заряда
-│   └── Switch.vue         # Переключатель MOSFET
-├── views/
-│   ├── Connection.vue     # Экран подключения
-│   ├── Dashboard.vue      # Главный дашборд
-│   └── Settings.vue       # Параметры EEPROM
-├── router/
-│   └── index.ts           # Маршруты + guard (редирект без соединения)
-└── assets/
-    └── main.css           # CSS-переменные (light/dark тема)
-```
-
----
-
-## BLE-протокол
-
-Приложение использует GATT-сервис Xiaoxiang BMS:
-
-| Роль | UUID |
-|------|------|
-| Service | `0000ff00-0000-1000-8000-00805f9b34fb` |
-| TX (запись команд) | `0000ff02-0000-1000-8000-00805f9b34fb` |
-| RX (уведомления) | `0000ff01-0000-1000-8000-00805f9b34fb` |
-
-### Основные команды
-
-| Команда | Регистр | Описание |
-|---------|---------|----------|
-| `0x03` | — | Основные данные (напряжение, ток, статус) |
-| `0x04` | — | Напряжения ячеек |
-| `0x05` | — | Информация о BMS |
-| `0xE1` / `0xE2` | `0x01` | Управление MOSFET (заряд / разряд) |
-| `0x5A` `0x00` | — | Вход в режим EEPROM |
-| `0x5A` `0x01` | — | Выход из режима EEPROM |
-
-Ток (`packet[6:7]`) передаётся в формате **signed int16** (положительный = зарядка, отрицательный = разряд).
-
----
-
-## Скрипты
-
-| Команда | Описание |
-|---------|----------|
-| `npm run dev` | Dev-сервер с HMR |
-| `npm run build` | Production-сборка |
-| `npm run preview` | Предпросмотр собранного приложения |
-| `npm run type-check` | Проверка типов TypeScript |
-| `npm run lint` | Линтинг (oxlint + eslint) с автофиксом |
-| `npm run format` | Форматирование кода (oxfmt) |
-
----
-
-## Стек
-
-| Слой | Технология |
-|------|-----------|
-| Framework | Vue 3 (Composition API) |
-| Язык | TypeScript |
-| Build | Vite 7 |
-| UI | Naive UI |
-| State | Pinia |
-| Router | Vue Router 5 |
-| Utils | @vueuse/core |
-| Иконки | @vicons/material |
-| Lint | oxlint + eslint |
-| Format | oxfmt |
-
----
-
-## Известные ограничения
-
-- **Запись в EEPROM** (изменение порогов напряжений, токов) не реализована — параметры только для чтения
-- **Повторяющиеся события (BOOT_COMPLETED)** — не применимо для браузерного приложения; при закрытии вкладки соединение разрывается
-- **iOS** — Web Bluetooth недоступен вне зависимости от браузера
-
----
-
-## Лицензия
-
-MIT
